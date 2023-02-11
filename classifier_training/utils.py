@@ -184,26 +184,35 @@ def generate_word_level_mutation(captions, keywords,
 	return mcaptions, ocaptions, acaptions
 
 # load real/fake text
-def load_data(real_text_dir, text_file_real,
-						fake_text_dir, text_file_fake,
-						train_test_split='train'):
-		# load real text
-		cur_text_path = os.path.join(real_text_dir, 
+def load_data(human_text_dir, text_file_human,
+			  mutation_text_dir, text_file_mutation,
+			  synthetic_text_dir, text_file_synthetic,
+			  train_test_split='train'):
+		data = []
+
+		# load synthetic text
+		cur_text_path = os.path.join(synthetic_text_dir,
 									 train_test_split,
-									 (train_test_split.title() + "_" + text_file_real))
-		real_names, real_captions = load_text(cur_text_path)
-		real_data = []
-		for i in range(len(real_captions)):
-			real_data.append([real_names[i], real_captions[i], 1])
+									 (train_test_split.title() + "_" + text_file_synthetic))
+		synthetic_titles, synthetic_captions = load_text(cur_text_path)
+		for i in range(len(synthetic_captions)):
+			data.append([synthetic_titles[i], synthetic_captions[i], 2])
+
+		# load human text
+		cur_text_path = os.path.join(human_text_dir,
+									 train_test_split,
+									 (train_test_split.title() + "_" + text_file_human))
+		human_titles, human_captions = load_text(cur_text_path)
+		for i in range(len(human_captions)):
+			data.append([human_titles[i], human_captions[i], 1])
 
 		# load fake (machine-generated) text
-		cur_text_path = os.path.join(fake_text_dir, 
+		cur_text_path = os.path.join(mutation_text_dir,
 									 train_test_split,
-									 (train_test_split.title() + "_" + text_file_fake))
-		fake_names, fake_captions = load_text(cur_text_path)
-		fake_data = []
-		for i in range(len(fake_captions)):
-			real_data.append([fake_names[i], fake_captions[i], 0])
+									 (train_test_split.title() + "_" + text_file_mutation))
+		mutation_title, mutation_captions = load_text(cur_text_path)
+		for i in range(len(mutation_captions)):
+			data.append([mutation_title[i], mutation_captions[i], 0])
 
 		# combine real/fake lists together and return
-		return real_data+fake_data
+		return data

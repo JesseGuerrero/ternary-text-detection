@@ -47,14 +47,16 @@ with open("../mutation_miniframework/mutation_data/random_word.json") as randomJ
 project_data_path = "./test"
 
 text_data_path = os.path.join(project_data_path, 'data_10k', 'Parsed')
-real_text_dir = os.path.join(text_data_path, 'train_val_test/real')
-fake_text_dir = os.path.join(text_data_path, 'train_val_test/mutation')
-text_file_mutation = 'MutationFullSet.json'
-text_file_real = 'HumanFullSet.json'
+human_text_dir = os.path.join(text_data_path, 'train_val_test/human')
+mutation_text_dir = os.path.join(text_data_path, 'train_val_test/mutation')
+synthetic_text_dir = os.path.join(text_data_path, 'train_val_test/synthetic')
+text_file_mutation = 'WikiMutationFullSet.json'
+text_file_human = 'WikiHumanFullSet.json'
+text_file_synthetic = 'WikiSyntheticFullSet.json'
 
 
 ckpt_dir = os.path.join(project_data_path, "ckpt")
-output_path = os.path.join(ckpt_dir, "COCO-Finetune-RoBERTa-Based-Detector")
+output_path = os.path.join(ckpt_dir, "Ternary-Custom-Detector")
 if(not os.path.exists(output_path)):
 	print("Making Dir...\n\t%s" %output_path)
 	os.makedirs(output_path)
@@ -75,19 +77,22 @@ if (not os.path.exists(roberta_detector_ckpt_path)):
 
 # Load data
 #[img name, captions, label]
-train_data = U.load_data(real_text_dir, text_file_real,
-						 fake_text_dir, text_file_mutation,
+train_data = U.load_data(human_text_dir, text_file_human,
+						 mutation_text_dir, text_file_mutation,
+						 synthetic_text_dir, text_file_synthetic,
 						 train_test_split='train')
-val_data = U.load_data(real_text_dir, text_file_real,
-					   fake_text_dir, text_file_mutation,
+val_data = U.load_data(human_text_dir, text_file_human,
+					   mutation_text_dir, text_file_mutation,
+					   synthetic_text_dir, text_file_synthetic,
 					   train_test_split='val')
-test_data = U.load_data(real_text_dir, text_file_real,
-						fake_text_dir, text_file_mutation,
+test_data = U.load_data(human_text_dir, text_file_human,
+						mutation_text_dir, text_file_mutation,
+						synthetic_text_dir, text_file_synthetic,
 						train_test_split='test')
 
 # set hyperparameters
 batch_size = 1
-epochs = 10
+epochs = 2
 learning_rate = 0.0001
 finetune_embeddings = False
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -106,11 +111,14 @@ if FROM_CHECKPOINT is True:
 else:
 	model.load_state_dict(ckpt['model_state_dict'])#Only do ckpt when loading
 model = model.to(device)
+model.classifier.out_proj = nn.Linear(1024, 3, bias=True)
 
 # Freeze roberta weights (i.e., the embedding weights)
 # leave the classifier tunable
 for p in model.roberta.parameters():
 	p.requires_grad = finetune_embeddings
+
+
 
 BCE = nn.BCELoss()
 loss_function = nn.CrossEntropyLoss()
@@ -150,7 +158,7 @@ for e in t:
 			cur_data = data[i*batch_size:(i+1)*batch_size]
 			cur_names = cur_data[:,0]
 			cur_captions = cur_data[:,1]#TODO: Adjust for extra dimension, captions and labels
-			cur_labels = cur_data[:,2].astype(np.int8)#Mutation is 0, real is 1
+			cur_labels = cur_data[:,2].astype(np.int8)#Mutation is 0, real is 1, synthetic is 2
 
 			# Generate mutation
 			# if need to generate mutation, add code here
