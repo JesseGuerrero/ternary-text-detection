@@ -39,10 +39,10 @@ ADVERSARIAL_TYPE = "do-nothing"
 #DATA_FILE = './data/fakeTextSmall1.txt'
 #DATA_FILE = './data/fakeTextSmall2.txt'
 DATA_FILE = './data/xl-1542M-k40.test.jsonl'
-DETECTOR_FILE = "./newestCOCOFullSetCombined.pt"
-# DETECTOR_FILE = "./detector-large.pt"
+# DETECTOR_FILE = "./newestCOCOFullSetCombined.pt"
+DETECTOR_FILE = "./detector-large.pt"
 HOMOGLYPH_REPLACEMENT = [[' a ', ' α ']]
-IMAGES_TO_RUN = 100
+IMAGES_TO_RUN = 10
 
 IMAGES_TO_RUN *= (1 if CHECK_BY_IMAGE else 5) # run 5 captions individually when not by image
 
