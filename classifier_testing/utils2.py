@@ -60,8 +60,6 @@ def get_results(experiment_name, dataset_type, adv_textList: list, results: list
 	avg = 0
 	for adv in adv_textList:
 		avg += len(adv)
-	print(avg / len(adv_textList))
-
 
 	for i in range(results.size):
 		if np.float32(results[i]) == 0:

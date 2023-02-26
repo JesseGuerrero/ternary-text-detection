@@ -185,10 +185,19 @@ def generate_word_level_mutation(captions, keywords,
 
 # load real/fake text
 def load_data(human_text_dir, text_file_human,
-			  mutation_text_dir, text_file_mutation,
+			  human_mutation_text_dir, text_file_human_mutation,
 			  synthetic_text_dir, text_file_synthetic,
+			  synthetic_mutation_text_dir, text_file_synthetic_mutation,
 			  train_test_split='train'):
 		data = []
+
+		# load fake (machine-generated) text
+		cur_text_path = os.path.join(synthetic_mutation_text_dir,
+									 train_test_split,
+									 (train_test_split.title() + "_" + text_file_synthetic_mutation))
+		mutation_title, mutation_captions = load_text(cur_text_path)
+		for i in range(len(mutation_captions)):
+			data.append([mutation_title[i], mutation_captions[i], 3])
 
 		# load synthetic text
 		cur_text_path = os.path.join(synthetic_text_dir,
@@ -207,9 +216,9 @@ def load_data(human_text_dir, text_file_human,
 			data.append([human_titles[i], human_captions[i], 1])
 
 		# load fake (machine-generated) text
-		cur_text_path = os.path.join(mutation_text_dir,
+		cur_text_path = os.path.join(human_mutation_text_dir,
 									 train_test_split,
-									 (train_test_split.title() + "_" + text_file_mutation))
+									 (train_test_split.title() + "_" + text_file_human_mutation))
 		mutation_title, mutation_captions = load_text(cur_text_path)
 		for i in range(len(mutation_captions)):
 			data.append([mutation_title[i], mutation_captions[i], 0])

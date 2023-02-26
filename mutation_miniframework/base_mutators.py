@@ -42,8 +42,8 @@ def replaceWordsByDoubleList(dataset : Dataset, word_list : list, count=1):
             amountToReplace = count
             words = text.split(" ")
             for word in words:
-                if(word in word_list):
-                    (text, numReplaced) = re.subn(word, random.choice(word_list), text, amountToReplace)
+                if word in word_list:
+                    (text, numReplaced) = re.subn(word, random.choice(word_list), text, 1)
                     amountToReplace -= numReplaced
                 if amountToReplace <= 0:
                     break
