@@ -25,10 +25,10 @@ Adversarial Types:
 -'random-order-replace-char': Same as replace char except the input text lines are shuffled
 -'misspelling': Replaces certain words with misspellings from misspellings.json.
 '''
-MUTATION, REAL, SYNTHETIC = 0, 1, 2
+HUMAN_MUTATION, REAL, SYNTHETIC, SYNTHETIC_MUTATION = 0, 1, 2, 3
 
-EXPERIMENT_NAME = "CheckMutation"
-DATASET_TYPE = MUTATION
+EXPERIMENT_NAME = "CheckHuman"
+DATASET_TYPE = REAL
 CHECK_BY_IMAGE = True
 ADVERSARIAL_TYPE = "do-nothing"
 # DATA_FILE = './data/Test_WikiHumanFullSet.json'
@@ -41,9 +41,9 @@ ADVERSARIAL_TYPE = "do-nothing"
 # DATA_FILE = './data/Test_WikiMutationFullSetMisspellings.json'
 # DATA_FILE = './data/Test_WikiMutationFullSetReplaceAE.json'
 # DATA_FILE = './data/Test_WikiMutationQuarterSet.json'
-# DATA_FILE = './data/Test_WikiSyntheticFullSet.json'
+DATA_FILE = './data/Test_WikiSyntheticFullSet.json'
 # DATA_FILE = './data/Test_WikiSyntheticQuarterSet.json'
-DETECTOR_FILE = "./base_9.pt"
+DETECTOR_FILE = "./base.pt"
 HOMOGLYPH_REPLACEMENT = [[' a ', ' α ']]
 TEXTS_TO_RUN = 200
 
@@ -109,11 +109,13 @@ import wget
 if __name__ == '__main__':
 	detector = Detector(DETECTOR_FILE)
 
+	file2 = [DATA_FILE]
+
 	files = ['./data/Test_WikiMutationFullReplaceAntonyms.json', './data/Test_WikiMutationFullReplaceRandomWords.json',
 	 './data/Test_WikiMutationFullReplaceSynonyms.json', './data/Test_WikiMutationFullSetDeleteArticles.json',
 	 './data/Test_WikiMutationFullSetMisspellings.json', './data/Test_WikiMutationFullSetReplaceAE.json']
 
-	for file in files:
+	for file in file2:
 		EXPERIMENT_NAME = file
 		adv_textList = []
 		results = []

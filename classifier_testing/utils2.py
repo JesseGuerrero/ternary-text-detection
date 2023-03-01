@@ -54,8 +54,9 @@ def get_results(experiment_name, dataset_type, adv_textList: list, results: list
 	results = np.float32(np.asarray(results))
 
 	num_human = 0
-	num_mutation = 0
+	num_human_mutation = 0
 	num_synthetic = 0
+	num_synthetic_mutation = 0
 	num_changed = 0
 	avg = 0
 	for adv in adv_textList:
@@ -63,19 +64,23 @@ def get_results(experiment_name, dataset_type, adv_textList: list, results: list
 
 	for i in range(results.size):
 		if np.float32(results[i]) == 0:
-			num_mutation += 1
+			num_human_mutation += 1
 		elif np.float32(results[i]) == 1:
 			num_human += 1
-		else:
+		elif np.float32(results[i]) == 2:
 			num_synthetic += 1
+		elif np.float32(results[i]) == 3:
+			num_synthetic_mutation += 1
 		num_changed+=np.float32(num_ch[i])#How many characters cut off
 
-	print('Number human:', f'Human: {num_human}, Mutation: {num_mutation}, Synthetic: {num_synthetic}')
+	print('Number human:', f'Human: {num_human}, Mutation: {num_human_mutation}, Synthetic: {num_synthetic}, Synthetic Mutation: {num_synthetic_mutation}')
 	if dataset_type == 0:
-		print('Detector accuracy:', (num_mutation / results.size))
+		print('Detector accuracy:', (num_human_mutation / results.size))
 	elif dataset_type == 1:
 		print('Detector accuracy:', (num_human / results.size))
-	else:
+	elif dataset_type == 2:
 		print('Detector accuracy:', (num_synthetic / results.size))
+	else:
+		print('Detector accuracy:', (num_synthetic_mutation / results.size))
 	print('Average number of changes:', num_changed / len(num_ch))
 	print('Number of Attacks Run:', results.size)

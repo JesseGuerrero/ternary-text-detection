@@ -13,7 +13,7 @@ class Detector(object):
 		data = torch.load(detector_file_name)
 		self.model = RobertaForSequenceClassification.from_pretrained('roberta-large')
 		self.tokenizer = RobertaTokenizer.from_pretrained('roberta-large')
-		self.model.classifier.out_proj = nn.Linear(1024, 3, bias=True)
+		self.model.classifier.out_proj = nn.Linear(1024, 4, bias=True)
 		if detector_file_name == "./detector-large.pt":
 			self.model.load_state_dict(data['model_state_dict'])
 		else:
